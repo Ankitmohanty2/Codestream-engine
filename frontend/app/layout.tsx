@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from "@/context/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "CodeStream Engine",
-  description: "Real-time collaborative code editor",
+  title: "CodeStream Engine — Collaborative Code Editor",
+  description: "Write, run, and share code together in real-time. Built for developers, teams, and interviews.",
 };
 
 export default function RootLayout({
@@ -15,11 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-dark-900 text-white">
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
           {children}
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
