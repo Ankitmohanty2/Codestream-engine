@@ -1,4 +1,4 @@
-# 🚀 CodeStream Engine
+# CodeStream Engine
 
 A real-time collaborative code editor built with **FastAPI, WebSockets, MongoDB, and Next.js**.
 
@@ -60,45 +60,66 @@ Code Execution Engine (Sandboxed subprocess)
 # 📂 Project Structure
 
 backend/
-│
 ├── app/
+│   ├── config.py           # Environment configuration
+│   ├── main.py            # Application entry point
+│   ├── dependencies.py    # Dependency injection
+│   ├── models/
+│   │   ├── schemas.py     # Pydantic schemas
+│   │   └── database.py    # MongoDB models & repositories
 │   ├── routers/
-│   │   ├── rooms.py
-│   │   └── execution.py
-│   │
-│   ├── services/
-│   │   ├── connection_manager.py
-│   │   ├── room_service.py
-│   │   └── execution_service.py
-│   │
-│   ├── repositories/
-│   │   └── room_repository.py
-│   │
-│   ├── schemas/
-│   │   └── room_schema.py
-│   │
-│   ├── core/
-│   │   ├── config.py
-│   │   └── database.py
-│   │
-│   └── main.py
-│
+│   │   ├── rooms.py       # REST endpoints for rooms
+│   │   ├── execution.py   # Code execution endpoint
+│   │   └── websocket.py   # WebSocket handler
+│   └── services/
+│       ├── connection_manager.py  # WebSocket connection management
+│       ├── sync_service.py       # Code sync & conflict resolution
+│       └── execution_service.py  # Code execution sandbox
 ├── Dockerfile
-└── docker-compose.yml
+├── docker-compose.yml
+└── requirements.txt
+```
 
----
+### Frontend (Next.js)
 
-# 🔌 WebSocket API
+```
+frontend/
+├── app/
+│   ├── page.tsx              # Home page (create/join rooms)
+│   ├── layout.tsx            # Root layout
+│   ├── globals.css           # Global styles
+│   └── room/[roomId]/
+│       └── page.tsx          # Collaborative editor page
+├── components/
+│   ├── Editor.tsx            # Monaco Editor wrapper
+│   ├── Terminal.tsx          # Code output terminal
+│   └── Sidebar.tsx          # User list & controls
+├── hooks/
+│   └── useWebSocket.ts       # WebSocket hook with reconnection
+├── package.json
+├── tailwind.config.ts
+├── tsconfig.json
+├── next.config.js
+└── Dockerfile
+```
 
-### Endpoint
+### Database Schema
 
-/ws/{room_id}
+**Room Collection:**
+```json
+{
+  "room_id": "string",
+  "name": "string",
+  "language": "python|cpp",
+  "code": "string",
+  "version": 1,
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "active_users": []
+}
+```
 
----
-
-## Message Types
-
-### 1. Code Update (Diff)
+### WebSocket Message Format
 
 ```json
 {

@@ -13,15 +13,16 @@ class SyncService:
         self.room_repo = room_repo
         self.dmp = diff_match_patch()
         self._document_cache: Dict[str, str] = {}
+        self._version_cache: Dict[str, int] = {}
 
     async def get_document(self, room_id: str) -> Tuple[str, int]:
         if room_id in self._document_cache:
-            version = self.dmp.patch_toText(self._document_cache.get(room_id, ""))
-            return self._document_cache[room_id], 0
+            return self._document_cache[room_id], self._version_cache.get(room_id, 1)
 
         room = await self.room_repo.get_room(room_id)
         if room:
             self._document_cache[room_id] = room.get("code", "")
+            self._version_cache[room_id] = room.get("version", 1)
             return room["code"], room.get("version", 1)
 
         return "", 1
@@ -33,8 +34,8 @@ class SyncService:
     def apply_diff(self, text: str, diff: str) -> Tuple[str, bool]:
         try:
             patches = self.dmp.patch_fromText(diff)
-            new_text, _ = self.dmp.patch_apply(patches, text)
-            return new_text, True
+            new_text, results = self.dmp.patch_apply(patches, text)
+            return new_text, all(results)
         except Exception as e:
             logger.error(f"Failed to apply diff: {e}")
             return text, False
@@ -72,6 +73,7 @@ class SyncService:
             current_version += 1
 
         self._document_cache[room_id] = current_code
+        self._version_cache[room_id] = current_version
 
         try:
             await self.room_repo.update_room_code(
@@ -93,6 +95,7 @@ class SyncService:
             }
 
         self._document_cache[room_id] = room.get("code", "")
+        self._version_cache[room_id] = room.get("version", 1)
 
         return {
             "code": room.get("code", ""),
@@ -123,3 +126,4 @@ class SyncService:
 
     def invalidate_cache(self, room_id: str) -> None:
         self._document_cache.pop(room_id, None)
+        self._version_cache.pop(room_id, None)

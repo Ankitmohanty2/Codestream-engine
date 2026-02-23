@@ -1,7 +1,3 @@
-"""
-REST API routes for code execution.
-Provides endpoint to run user code in a sandboxed environment.
-"""
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -22,20 +18,14 @@ async def run_code(
     request: CodeExecutionRequest,
     exec_service: ExecutionService = Depends(get_execution_service)
 ) -> CodeExecutionResponse:
-    """
-    Execute code in a sandboxed environment.
-    
-    Supports Python and C++ code execution with timeout protection.
-    Returns stdout, stderr, and execution time.
-    """
     logger.info(f"Executing {request.language} code")
-    
+
     output, error, execution_time = await exec_service.execute(
         code=request.code,
         language=request.language,
         input_data=request.input or ""
     )
-    
+
     return CodeExecutionResponse(
         output=output,
         error=error,

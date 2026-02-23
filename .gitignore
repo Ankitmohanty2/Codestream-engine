@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Backend specific
+*.log
+.env
+.env.local
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Frontend specific
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# MongoDB data (local)
+data/
+mongodata/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json

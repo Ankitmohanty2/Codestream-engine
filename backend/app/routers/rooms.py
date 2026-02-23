@@ -1,7 +1,3 @@
-"""
-REST API routes for room management.
-Provides endpoints for creating, listing, and managing rooms.
-"""
 import uuid
 import logging
 from typing import List
@@ -29,28 +25,19 @@ async def create_room(
     room_repo: RoomRepository = Depends(get_room_repository),
     conn_manager: ConnectionManager = Depends(get_connection_manager)
 ) -> RoomResponse:
-    """
-    Create a new collaboration room.
-    
-    Generates a unique room ID and initializes the room with optional
-    initial code content.
-    """
-    # Generate unique room ID
     room_id = str(uuid.uuid4())[:8]
-    
-    # Create room in database
+
     room_doc = await room_repo.create_room(
         room_id=room_id,
         name=room_data.name,
         language=room_data.language.value,
         initial_code=room_data.initial_code or ""
     )
-    
-    # Initialize version in connection manager
+
     await conn_manager.update_version(room_id, 1)
-    
+
     logger.info(f"Created room: {room_id} ({room_data.name})")
-    
+
     return RoomResponse(
         room_id=room_doc["room_id"],
         name=room_doc["name"],
@@ -68,14 +55,8 @@ async def list_rooms(
     limit: int = 50,
     room_repo: RoomRepository = Depends(get_room_repository)
 ) -> List[RoomInfo]:
-    """
-    List all available rooms.
-    
-    Returns rooms sorted by creation date (newest first).
-    Includes count of active users in each room.
-    """
     rooms = await room_repo.list_rooms(limit=limit)
-    
+
     return [
         RoomInfo(
             room_id=room["room_id"],
@@ -94,24 +75,16 @@ async def get_room(
     room_repo: RoomRepository = Depends(get_room_repository),
     conn_manager: ConnectionManager = Depends(get_connection_manager)
 ) -> RoomResponse:
-    """
-    Get room details by ID.
-    
-    Includes current code, version, and active users.
-    """
-    # Get room from database
     room = await room_repo.get_room(room_id)
-    
+
     if not room:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Room {room_id} not found"
         )
-    
-    # Get active users from connection manager
+
     active_users = await conn_manager.get_room_users(room_id)
-    
-    # Convert to UserInfo objects
+
     from app.models.schemas import UserInfo
     users = [
         UserInfo(
@@ -122,7 +95,7 @@ async def get_room(
         )
         for u in active_users
     ]
-    
+
     return RoomResponse(
         room_id=room["room_id"],
         name=room["name"],
@@ -141,27 +114,20 @@ async def delete_room(
     room_repo: RoomRepository = Depends(get_room_repository),
     conn_manager: ConnectionManager = Depends(get_connection_manager)
 ) -> None:
-    """
-    Delete a room.
-    
-    Only deletes if room is empty (no active users).
-    """
-    # Check if room has active users
     active_users = await conn_manager.get_room_users(room_id)
-    
+
     if active_users:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot delete room with active users"
         )
-    
-    # Delete from database
+
     deleted = await room_repo.delete_room(room_id)
-    
+
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Room {room_id} not found"
         )
-    
+
     logger.info(f"Deleted room: {room_id}")
