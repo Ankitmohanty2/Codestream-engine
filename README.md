@@ -1,4 +1,4 @@
-# CodeStream Engine
+# 🚀 CodeStream Engine
 
 A real-time collaborative code editor built with **FastAPI, WebSockets, MongoDB, and Next.js**.
 
