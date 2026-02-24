@@ -5,10 +5,10 @@ from datetime import datetime
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 
 from app.models.schemas import Language
-from app.services.connection_manager import ConnectionManager, manager
+from app.services.connection_manager import ConnectionManager
 from app.services.sync_service import SyncService
 from app.services.execution_service import ExecutionService
-from app.dependencies import get_sync_service, get_execution_service
+from app.dependencies import get_sync_service, get_execution_service, get_connection_manager
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ async def websocket_endpoint(
     username: str,
     sync_service: SyncService = Depends(get_sync_service),
     exec_service: ExecutionService = Depends(get_execution_service),
-    conn_manager: ConnectionManager = Depends(lambda: manager)
+    conn_manager: ConnectionManager = Depends(get_connection_manager)
 ):
     await conn_manager.connect(websocket, room_id, user_id, username)
 

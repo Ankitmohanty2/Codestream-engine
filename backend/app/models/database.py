@@ -120,16 +120,12 @@ class RoomRepository:
     async def list_rooms(self, limit: int = 50) -> List[Dict[str, Any]]:
         cursor = self.collection.find(
             {},
-            {
-                "room_id": 1,
-                "name": 1,
-                "language": 1,
-                "created_at": 1,
-                "active_users": {"$size": "$active_users"}
-            }
+            {"room_id": 1, "name": 1, "language": 1, "created_at": 1, "active_users": 1}
         ).sort("created_at", -1).limit(limit)
 
         rooms = await cursor.to_list(length=limit)
+        for r in rooms:
+            r["active_users"] = len(r.get("active_users") or [])
         return rooms
 
     async def delete_room(self, room_id: str) -> bool:
