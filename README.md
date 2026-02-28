@@ -57,7 +57,7 @@ Code Execution Engine (Sandboxed subprocess)
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 backend/
 ├── app/
