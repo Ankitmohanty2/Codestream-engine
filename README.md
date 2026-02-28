@@ -22,7 +22,7 @@ It goes beyond CRUD APIs and demonstrates systems-level backend engineering.
 
 ---
 
-# 🏗 System Architecture
+#  System Architecture
 
 Client (Next.js + Monaco Editor)
         │
@@ -39,7 +39,7 @@ Code Execution Engine (Sandboxed subprocess)
 
 ---
 
-# ⚙️ Tech Stack
+#  Tech Stack
 
 ## Backend
 - FastAPI (async)
